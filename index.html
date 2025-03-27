@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Car Recommendation System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-gray);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3367d6;
+        }
+
+        .secondary-btn {
+            background-color: var(--dark-gray);
+        }
+
+        .secondary-btn:hover {
+            background-color: #616161;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .car-card {
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .car-image {
+            height: 180px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .car-details {
+            padding: 20px;
+        }
+
+        .car-details h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .car-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .car-specs {
+            margin-bottom: 15px;
+        }
+
+        .car-specs p {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .car-specs span:first-child {
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+
+        .car-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .compare-btn {
+            background-color: var(--accent-color);
+            padding: 8px 15px;
+        }
+
+        .compare-btn:hover {
+            background-color: #d33426;
+        }
+
+        .filter-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        #comparison-table th, #comparison-table td {
+            border: 1px solid var(--medium-gray);
+            padding: 12px;
+            text-align: left;
+        }
+
+        #comparison-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #comparison-table tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+
+        footer {
+            background-color: var(--text-color);
+            color: var(--white);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin-bottom: 5px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .car-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AI-Driven Car Recommendation System</h1>
+            <p>Find your perfect car with intelligent recommendations</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="user-input">
+            <h2>Tell Us Your Preferences</h2>
+            <form id="preference-form">
+                <div class="form-group">
+                    <label for="budget">Budget Range (₹)</label>
+                    <select id="budget" required>
+                        <option value="">Select Budget</option>
+                        <option value="500000-1000000">₹5L - ₹10L</option>
+                        <option value="1000000-1500000">₹10L - ₹15L</option>
+                        <option value="1500000-2000000">₹15L - ₹20L</option>
+                        <option value="2000000-3000000">₹20L - ₹30L</option>
+                        <option value="3000000+">₹30L+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fuel-type">Fuel Type</label>
+                    <select id="fuel-type" required>
+                        <option value="">Select Fuel Type</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="Electric">Electric</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="seating">Seating Capacity</label>
+                    <select id="seating" required>
+                        <option value="">Select Seating</option>
+                        <option value="2">2 Seater</option>
+                        <option value="4">4 Seater</option>
+                        <option value="5">5 Seater</option>
+                        <option value="7">7 Seater</option>
+                        <option value="8+">8+ Seater</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="mileage">Mileage Preference (kmpl or km/kg)</label>
+                    <select id="mileage" required>
+                        <option value="">Select Mileage</option>
+                        <option value="10-15">10-15</option>
+                        <option value="15-20">15-20</option>
+                        <option value="20-25">20-25</option>
+                        <option value="25+">25+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="car-type">Car Type</label>
+                    <select id="car-type" required>
+                        <option value="">Select Car Type</option>
+                        <option value="Hatchback">Hatchback</option>
+                        <option value="Sedan">Sedan</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Luxury">Luxury</option>
+                        <option value="Sports">Sports</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="brand-preference">Brand Preference (optional)</label>
+                    <input type="text" id="brand-preference" placeholder="e.g., Tata, Hyundai, etc.">
+                </div>
+
+                <button type="submit" id="recommend-btn">Get Recommendations</button>
+            </form>
+        </section>
+
+        <section id="recommendations" class="hidden">
+            <h2>Recommended Cars For You</h2>
+            <div class="filter-options">
+                <label for="sort-by">Sort By:</label>
+                <select id="sort-by">
+                    <option value="relevance">Relevance</option>
+                    <option value="price-low">Price (Low to High)</option>
+                    <option value="price-high">Price (High to Low)</option>
+                    <option value="mileage">Mileage</option>
+                    <option value="rating">User Rating</option>
+                </select>
+            </div>
+            <div id="car-list" class="car-grid"></div>
+        </section>
+
+        <section id="comparison" class="hidden">
+            <h2>Compare Selected Cars</h2>
+            <div id="comparison-table"></div>
+            <button id="clear-comparison" class="secondary-btn">Clear Comparison</button>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>AI-Driven Car Recommendation System - Powered by Indian Automotive Data Hub API</p>
+            <p>Team: S Krishna Dev, Sivanth MK, Sree Prakash, Sreehari KK</p>
+        </div>
+    </footer>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://indian-automotive-data-hub-api.onrender.com/api';
+        let allCars = [];
+        let recommendedCars = [];
+        let carsToCompare = [];
+
+        // DOM elements
+        const preferenceForm = document.getElementById('preference-form');
+        const recommendBtn = document.getElementById('recommend-btn');
+        const recommendationsSection = document.getElementById('recommendations');
+        const carList = document.getElementById('car-list');
+        const comparisonSection = document.getElementById('comparison');
+        const comparisonTable = document.getElementById('comparison-table');
+        const clearComparisonBtn = document.getElementById('clear-comparison');
+        const sortBy = document.getElementById('sort-by');
+
+        // Event Listeners
+        preferenceForm.addEventListener('submit', handleFormSubmit);
+        sortBy.addEventListener('change', sortCars);
+        clearComparisonBtn.addEventListener('click', clearComparison);
+
+        // Initialize - Fetch all cars when page loads
+        document.addEventListener('DOMContentLoaded', fetchAllCars);
+
+        // Fetch all cars from API
+        async function fetchAllCars() {
+            try {
+                showLoading(recommendBtn, true);
+                const response = await fetch(`${API_BASE_URL}/cars`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch cars');
+                }
+                const data = await response.json();
+                allCars = data.cars.map(car => ({
+                    ...car,
+                    // Convert price string to number for easier comparison
+                    price: parseFloat(car.price.replace(/[^0-9.]/g, '')) * 100000 // Convert lakhs to rupees
+                }));
+            } catch (error) {
+                console.error('Error fetching cars:', error);
+                alert('Failed to load car data. Please try again later.');
+            } finally {
+                showLoading(recommendBtn, false);
+            }
+        }
+
+        // Form submission handler
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const budget = document.getElementById('budget').value;
+            const fuelType = document.getElementById('fuel-type').value;
+            const seating = document.getElementById('seating').value;
+            const mileage = document.getElementById('mileage').value;
+            const carType = document.getElementById('car-type').value;
+            const brandPreference = document.getElementById('brand-preference').value.toLowerCase();
+            
+            // Show loading state
+            showLoading(recommendBtn, true);
+            
+            try {
+                // Filter cars based on preferences
+                recommendedCars = allCars.filter(car => {
+                    // Budget filter
+                    const [minBudget, maxBudget] = budget === '3000000+' ? [3000000, Infinity] : 
+                                                budget ? budget.split('-').map(num => parseInt(num) * 100000) : [0, Infinity];
+                    if (car.price < minBudget || car.price > maxBudget) return false;
+                    
+                    // Other filters
+                    if (fuelType && car.fuelType !== fuelType) return false;
+                    if (seating && car.seatingCapacity !== seating) return false;
+                    if (carType && car.bodyType !== carType) return false;
+                    if (brandPreference && !car.make.toLowerCase().includes(brandPreference)) return false;
+                    
+                    // Mileage filter (simplified for demo)
+                    if (mileage) {
+                        const [minMileage] = mileage.split('-').map(Number);
+                        const carMileage = parseFloat(car.mileage);
+                        if (carMileage < minMileage) return false;
+                    }
+                    
+                    return true;
+                });
+                
+                // Display recommendations
+                displayRecommendations(recommendedCars);
+                
+                // Show recommendations section
+                recommendationsSection.classList.remove('hidden');
+                
+                // Scroll to recommendations
+                recommendationsSection.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error processing recommendations:', error);
+                alert('An error occurred while processing your request.');
+            } finally {
+                showLoading(recommendBtn, false);
+            }
+        }
+
+        // Display recommendations
+        function displayRecommendations(cars) {
+            carList.innerHTML = '';
+            
+            if (cars.length === 0) {
+                carList.innerHTML = '<p>No cars match your preferences. Try adjusting your criteria.</p>';
+                return;
+            }
+            
+            cars.forEach(car => {
+                const carCard = document.createElement('div');
+                carCard.className = 'car-card';
+                carCard.innerHTML = `
+                    <div class="car-image" style="background-image: url('${car.imageUrl || 'https://source.unsplash.com/random/600x400/?car,' + car.make + '-' + car.model}')"></div>
+                    <div class="car-details">
+                        <h3>${car.make} ${car.model}</h3>
+                        <div class="car-price">₹${(car.price / 100000).toFixed(2)} Lakh</div>
+                        <div class="car-specs">
+                            <p><span>Fuel Type:</span> <span>${car.fuelType}</span></p>
+                            <p><span>Seating:</span> <span>${car.seatingCapacity}</span></p>
+                            <p><span>Mileage:</span> <span>${car.mileage} kmpl</span></p>
+                            <p><span>Type:</span> <span>${car.bodyType}</span></p>
+                            <p><span>Transmission:</span> <span>${car.transmissionType}</span></p>
+                        </div>
+                        <div class="car-actions">
+                            <button class="compare-btn" data-id="${car._id}">Compare</button>
+                        </div>
+                    </div>
+                `;
+                carList.appendChild(carCard);
+            });
+            
+            // Add event listeners to compare buttons
+            document.querySelectorAll('.compare-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const carId = e.target.getAttribute('data-id');
+                    addToComparison(carId);
+                });
+            });
+        }
+
+        // Add car to comparison
+        function addToComparison(carId) {
+            const car = allCars.find(c => c._id === carId);
+            
+            if (!carsToCompare.some(c => c._id === carId)) {
+                carsToCompare.push(car);
+                
+                // Show comparison section if not already visible
+                if (carsToCompare.length >= 1) {
+                    comparisonSection.classList.remove('hidden');
+                }
+                
+                // Update comparison table
+                updateComparisonTable();
+                
+                // Show success message
+                alert(`${car.make} ${car.model} added to comparison`);
+            } else {
+                alert('This car is already in the comparison list');
+            }
+        }
+
+        // Update comparison table
+        function updateComparisonTable() {
+            if (carsToCompare.length === 0) {
+                comparisonTable.innerHTML = '<p>Select cars to compare from the recommendations</p>';
+                return;
+            }
+            
+            // Create table
+            let tableHTML = '<table><thead><tr><th>Feature</th>';
+            
+            // Add car names to header
+            carsToCompare.forEach(car => {
+                tableHTML += `<th>${car.make} ${car.model}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            // Add rows for each feature
+            const featuresToCompare = ['price', 'fuelType', 'seatingCapacity', 'mileage', 'bodyType', 'make', 'transmissionType', 'engineCapacity'];
+            
+            featuresToCompare.forEach(feature => {
+                tableHTML += `<tr><td>${feature === 'seatingCapacity' ? 'Seating' : 
+                                      feature === 'bodyType' ? 'Type' : 
+                                      feature === 'make' ? 'Brand' : 
+                                      feature === 'engineCapacity' ? 'Engine' : 
+                                      feature.charAt(0).toUpperCase() + feature.slice(1)}</td>`;
+                
+                carsToCompare.forEach(car => {
+                    if (feature === 'price') {
+                        tableHTML += `<td>₹${(car[feature] / 100000).toFixed(2)} Lakh</td>`;
+                    } else if (feature === 'engineCapacity') {
+                        tableHTML += `<td>${car[feature]} cc</td>`;
+                    } else {
+                        tableHTML += `<td>${car[feature]}</td>`;
+                    }
+                });
+                
+                tableHTML += '</tr>';
+            });
+            
+            tableHTML += '</tbody></table>';
+            comparisonTable.innerHTML = tableHTML;
+        }
+
+        // Clear comparison
+        function clearComparison() {
+            carsToCompare = [];
+            comparisonTable.innerHTML = '<p>Select cars to compare from the recommendations</p>';
+            comparisonSection.classList.add('hidden');
+        }
+
+        // Sort cars
+        function sortCars() {
+            const sortValue = sortBy.value;
+            let sortedCars = [...recommendedCars];
+            
+            switch (sortValue) {
+                case 'price-low':
+                    sortedCars.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    sortedCars.sort((a, b) => b.price - a.price);
+                    break;
+                case 'mileage':
+                    // Simplified sorting by mileage number
+                    sortedCars.sort((a, b) => {
+                        const aMileage = parseFloat(a.mileage);
+                        const bMileage = parseFloat(b.mileage);
+                        return bMileage - aMileage;
+                    });
+                    break;
+                case 'rating':
+                    // Note: API doesn't currently include ratings, so this won't work
+                    sortedCars.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                    break;
+                default:
+                    // Default sorting (relevance) - keep original order
+                    break;
+            }
+            
+            displayRecommendations(sortedCars);
+        }
+
+        // Show/hide loading indicator
+        function showLoading(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML += '<span class="loading"></span>';
+            } else {
+                button.disabled = false;
+                button.querySelector('.loading')?.remove();
+            }
+        }
+    </script>
+</body>
+</html>
